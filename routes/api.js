@@ -9,9 +9,9 @@ const Products = require('../models/products')
 const router = express.Router();
 
 
-const db = "mongodb://localhost:27017/newone";
+/* const db = "mongodb://localhost:27017/newone"; */
 
-/* mongoose.connect("mongodb://localhost:27017/newone", {
+mongoose.connect("mongodb://localhost:27017/new", {
     useCreateIndex:true,
     useNewUrlParser:true,
     useUnifiedTopology:true
@@ -20,15 +20,15 @@ const db = "mongodb://localhost:27017/newone";
 }).catch((error) => {
     console.log(error);
 })
- */
-mongoose.connect(db, (err) => {
+
+/* mongoose.connect(db, (err) => {
     if (err) {
         console.log(err)
     }
     else {
         console.log('Database connected')
     }
-})
+}) */
 
 
 router.get('/products', (req, res) => {
@@ -192,6 +192,34 @@ router.post('/address/:id', (req, res) => {
         } else {
             const { name, phone, address, pinCode } = req.body;
             let user = new Address({ user_id: user_id, name: name, phone: phone, address: address, pinCode: pinCode })
+            user.save((err, user) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(user);
+                    if (user) {
+                        res.status(200).send('Success');
+                    } else {
+                        res.status(401).send('Error');
+                    }
+                }
+            })
+        }
+    })
+})
+
+
+router.post('/contactus/:id', (req, res) => {
+    const user_id = req.params.id;
+    Address.findOne({ user_id: user_id }, (err, add) => {
+        if (err) {
+            console.log(err)
+        }
+        if (add) {
+            res.status(401).send('reported');
+        } else {
+            const { name, phone, address, pinCode } = req.body;
+            let user = new Address({ name: name, email: email, phone: phone, message: message })
             user.save((err, user) => {
                 if (err) {
                     console.log(err);
